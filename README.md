@@ -1,6 +1,6 @@
-# time_tracker_flutter_course
+# time_tracker_flutter
 
-A new Flutter application.
+A new Flutter application to track your progress on tasks.
 
 ## Getting Started
 
