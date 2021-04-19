@@ -16,13 +16,14 @@ import 'package:time_tracker_flutter_course/services/database.dart';
 
 class JobEntriesPage extends StatelessWidget {
   const JobEntriesPage({@required this.database, @required this.job});
+
   final Database database;
   final Job job;
 
   static Future<void> show(BuildContext context, Job job) async {
     final database = Provider.of<Database>(context, listen: false);
     await Navigator.of(context).push(
-      MaterialPageRoute(
+      CupertinoPageRoute(
         fullscreenDialog: false,
         builder: (context) => JobEntriesPage(database: database, job: job),
       ),
@@ -43,27 +44,30 @@ class JobEntriesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 2.0,
-        title: Text(job.name),
-        actions: <Widget>[
-          FlatButton(
-            child: Text(
-              'Edit',
-              style: TextStyle(fontSize: 18.0, color: Colors.white),
+    return StreamBuilder<Job>(
+        stream: database.jobStream(jobId: job.id),
+        builder: (context, snapshot) {
+          final job = snapshot.data;
+          final jobName = job?.name ?? '';
+          return Scaffold(
+            appBar: AppBar(
+              elevation: 2.0,
+              title: Text(jobName),
+              actions: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.edit,color: Colors.white,),
+                  onPressed: () =>
+                      EditJobPage.show(context, database: database, job: job),
+                ),
+                IconButton(
+                  icon: Icon(Icons.add,color:Colors.white), onPressed: ()=> EntryPage.show(
+                    context: context, database: database, job: job),
+                )
+              ],
             ),
-            onPressed: () => EditJobPage.show(context,database: database, job: job),
-          ),
-        ],
-      ),
-      body: _buildContent(context, job),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () =>
-            EntryPage.show(context: context, database: database, job: job),
-      ),
-    );
+            body: _buildContent(context, job),
+          );
+        });
   }
 
   Widget _buildContent(BuildContext context, Job job) {

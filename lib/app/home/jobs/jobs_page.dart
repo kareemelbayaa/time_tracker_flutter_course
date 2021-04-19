@@ -16,25 +16,7 @@ class JobsPage extends StatelessWidget {
   /***
    * sign out a user using FirebaseAuth
    */
-  Future<void> _signout(BuildContext context) async {
-    try {
-      final auth = Provider.of<AuthBase>(context, listen: false);
-      await auth.signOut();
-    } catch (e) {
-      print(e.toString());
-    }
-  }
 
-  Future<void> _confirmSignOut(BuildContext context) async {
-    final didRequestSignOut = await showAlertDialog(context,
-        title: 'Logout',
-        content: 'Are you sure you want to logout?',
-        defaultActionText: 'YES',
-        cancelActionText: 'CANCEL');
-    if (didRequestSignOut == true) {
-      _signout(context);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,20 +26,14 @@ class JobsPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Jobs'),
         actions: [
-          FlatButton(
-              onPressed: () => _confirmSignOut(context),
-              child: Text(
-                'logout',
-                style: TextStyle(fontSize: 18.0, color: Colors.white),
-              ))
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () => EditJobPage.show(
+              context,
+              database: Provider.of<Database>(context, listen: false),
+            ),
+          ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => EditJobPage.show(
-          context,
-          database: Provider.of<Database>(context, listen: false),
-        ),
-        child: Icon(Icons.add),
       ),
       body: _buildContents(context),
     );
